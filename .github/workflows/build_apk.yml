@@ -33,6 +33,20 @@ jobs:
       - name: Build APK (Release)
         run: flutter build apk --release
 
+      - name: Create Release and Upload APK
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
+        with:
+          tag_name: v1.0.0
+          name: "专属人物指南针 v1.0.0 (头顶指正南)"
+          body: |
+            ### 🧭 专属人物指南针 APK 发布
+            - **指针特性**：人物原图正上方（头顶/举手上方）精确指正南（South）。
+            - **功能**：内置地理位置与磁阻传感器权限，支持真机旋转自稳定和手动模拟模式。
+          files: build/app/outputs/flutter-apk/app-release.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
