@@ -1,4 +1,4 @@
-name: Build Custom Compass APK
+name: Build NanFangJian APK
 
 on:
   push:
@@ -39,7 +39,7 @@ jobs:
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: custom-compass-release-apk
+          name: NanFangJian-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
 
@@ -47,12 +47,19 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
         with:
-          tag_name: v1.0.0
-          name: "专属人物指南针 v1.0.0 (头顶指正南)"
+          tag_name: v1.0.1
+          name: "南方见 v1.0.1 (正式版)"
           body: |
-            ### 🧭 专属人物指南针 APK 发布
-            - **指针特性**：人物原图正上方（头顶/举手上方）精确指正南（South）。
-            - **功能**：内置地理位置与磁阻传感器权限，支持真机旋转自稳定和手动模拟模式。
+            ### 🧭「南方见」正式版 APK 发布
+
+            > “风过千山，我们在南方见。”
+            > 不论身在何方，他始终面朝南方守护你。
+
+            #### ✨ 本次全新设计语言升级：
+            - **视觉重构**：全新深邃夜空与浪漫渐变流光，正南方位特制专属红光呼吸动效；
+            - **朝向诗意状态**：将八个方向赋予诗意文案，精准对准南方时触发【相见】与【向南而行】状态指示；
+            - **传感器与校准**：人物原图正上方（头顶举手方向）绝对锁定地理正南方（South），随机身转动实时自稳定；
+            - **应用名称**：Android 桌面应用名称正式命名为「南方见」。
           files: build/app/outputs/flutter-apk/app-release.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

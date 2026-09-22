@@ -8,7 +8,7 @@
     <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="true" />
 
     <application
-        android:label="人物指南针"
+        android:label="南方见"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
