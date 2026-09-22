@@ -43,6 +43,10 @@ class CompassScreen extends StatefulWidget {
 
 class _CompassScreenState extends State<CompassScreen>
     with TickerProviderStateMixin {
+  static const _floatingChannel =
+      MethodChannel('com.example.custom_compass/floating');
+
+  bool _isFloatingEnabled = false;
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
   late AnimationController _floatController;
@@ -52,6 +56,7 @@ class _CompassScreenState extends State<CompassScreen>
   void initState() {
     super.initState();
     _requestPermission();
+    _checkFloatingStatus();
 
     // 正南对准时的呼吸光效
     _pulseController = AnimationController(
@@ -83,6 +88,35 @@ class _CompassScreenState extends State<CompassScreen>
 
   Future<void> _requestPermission() async {
     await Permission.locationWhenInUse.request();
+  }
+
+  Future<void> _checkFloatingStatus() async {
+    try {
+      final bool active =
+          await _floatingChannel.invokeMethod('isFloating') ?? false;
+      setState(() => _isFloatingEnabled = active);
+    } catch (_) {}
+  }
+
+  Future<void> _toggleFloatingWindow() async {
+    try {
+      if (_isFloatingEnabled) {
+        await _floatingChannel.invokeMethod('hideFloatingWindow');
+        setState(() => _isFloatingEnabled = false);
+      } else {
+        final bool hasPermission =
+            await _floatingChannel.invokeMethod('checkOverlayPermission') ??
+                false;
+        if (!hasPermission) {
+          await _floatingChannel.invokeMethod('requestOverlayPermission');
+          return;
+        }
+        await _floatingChannel.invokeMethod('showFloatingWindow');
+        setState(() => _isFloatingEnabled = true);
+      }
+    } catch (e) {
+      debugPrint('Floating toggle error: $e');
+    }
   }
 
   String _getDirectionPoem(double heading) {
@@ -442,6 +476,68 @@ class _CompassScreenState extends State<CompassScreen>
                     : [],
               ),
               textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 12),
+          // 悬浮窗快捷开启胶囊按钮
+          GestureDetector(
+            onTap: _toggleFloatingWindow,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: _isFloatingEnabled
+                      ? [
+                          const Color(0xFFFFD166).withOpacity(0.3),
+                          const Color(0xFFFF5252).withOpacity(0.3)
+                        ]
+                      : [
+                          Colors.white.withOpacity(0.08),
+                          Colors.white.withOpacity(0.04)
+                        ],
+                ),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: _isFloatingEnabled
+                      ? const Color(0xFFFFD166)
+                      : Colors.white24,
+                  width: 1.2,
+                ),
+                boxShadow: _isFloatingEnabled
+                    ? [
+                        BoxShadow(
+                          color: const Color(0xFFFFD166).withOpacity(0.3),
+                          blurRadius: 12,
+                        )
+                      ]
+                    : [],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    _isFloatingEnabled
+                        ? Icons.visibility_rounded
+                        : Icons.picture_in_picture_alt_rounded,
+                    size: 16,
+                    color: _isFloatingEnabled
+                        ? const Color(0xFFFFD166)
+                        : Colors.white70,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    _isFloatingEnabled ? '桌面迷你悬浮人物：已开启' : '开启桌面悬浮人物 (永远指向南方)',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: _isFloatingEnabled
+                          ? const Color(0xFFFFD166)
+                          : Colors.white,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 8),
