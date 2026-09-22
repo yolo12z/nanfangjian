@@ -47,17 +47,18 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
         with:
           tag_name: v1.0.3
-          name: "南方见 v1.0.3 (Android & iOS双端支持版)"
+          name: "南方见 v1.0.3 (正式发布版)"
           body: |
-            ### 🧭「南方见」Android & iOS 双端支持正式发布！
+            ### 🧭「南方见」正式版下载
 
             > “风过千山，我们在南方见。”
             > 构成主义抽象先锋 ✖ 奶龙实体伴游 ✖ 专属人物南向锁定
 
-            #### 📲 支持平台：
-            - **Android (APK)**: 直接下载下方 `app-release.apk` 即可安装使用。
-            - **iOS**: 源码工程已完整支持 iOS，并在仓库 Actions 中通过 macOS 机器完成了 iOS 编译验证。
-          files: build/app/outputs/flutter-apk/app-release.apk
+            #### 📲 下载说明：
+            - **Android (安卓手机)**：直接下载下方 `NanFangJian-Android.apk` 点击即可安装。
+            - **iOS (iPhone/iPad)**：下载下方 `NanFangJian-iOS.ipa` 文件，使用爱思助手/AltStore/TrollStore导入安装。
+          files: |
+            build/app/outputs/flutter-apk/app-release.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -77,5 +78,28 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build iOS (No codesign for CI validation)
+      - name: Build iOS Application
         run: flutter build ios --release --no-codesign
+
+      - name: Package into IPA
+        run: |
+          cd build/ios/iphoneos
+          mkdir Payload
+          cp -r Runner.app Payload/
+          zip -r NanFangJian-iOS.ipa Payload
+
+      - name: Upload iOS IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NanFangJian-iOS-ipa
+          path: build/ios/iphoneos/NanFangJian-iOS.ipa
+          if-no-files-found: error
+
+      - name: Upload IPA to Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
+        with:
+          tag_name: v1.0.3
+          files: build/ios/iphoneos/NanFangJian-iOS.ipa
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
