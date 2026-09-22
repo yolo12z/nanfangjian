@@ -5,6 +5,22 @@
 
 ---
 
+## 📲 直接下载安装 (Android & iOS)
+
+无需配置复杂的开发环境，直接前往 Releases 页面下载安装包：
+
+👉 **[点击前往 Releases 下载双端最新安装包](https://github.com/yolo12z/nanfangjian/releases)**
+
+### 📱 各平台安装指引：
+* **Android (安卓手机)**：
+  - 下载页面中的 `app-release.apk`，在手机上直接点击安装即可。
+* **iOS (苹果 iPhone / iPad)**：
+  - 下载页面中的 `NanFangJian-iOS.ipa` 文件；
+  - 苹果设备使用电脑端工具（**爱思助手** / **AltStore** / **TrollStore 巨魔**）签名后导入 iPhone 即可使用；
+  - 也可通过同一局域网用 iPhone Safari 浏览器打开 H5 页面后点击 **“分享 -> 添加到主屏幕”** 获得原汁原味的轻 App 体验！
+
+---
+
 ## ✨ 软件特色与设计语言
 
 1. **头顶指正南（独特指针算法）**：
@@ -26,17 +42,9 @@
 
 ---
 
-## 📲 直接下载安装 (APK)
-
-如果你只想在手机上安装使用，无需配置任何开发环境，直接前往 Releases 页面下载打包好的 APK 安装包：
-
-👉 **[点击前往 Releases 下载最新 APK](https://github.com/yolo12z/nanfangjian/releases)**
-
----
-
 ## 🛠️ 本地开发与编译
 
-本项目基于 **Flutter** 开发：
+本项目基于 **Flutter** 跨平台引擎开发：
 
 ```bash
 # 1. 克隆本项目
@@ -48,11 +56,14 @@ cd nanfangjian
 # 3. 安装依赖
 flutter pub get
 
-# 4. 连接安卓手机运行
+# 4. 连接安卓/苹果真机调试
 flutter run
 
-# 5. 打包 Release APK
+# 5. 打包 Android Release APK
 flutter build apk --release
+
+# 6. 打包 iOS 应用
+flutter build ios --release --no-codesign
 ```
 
 ---
